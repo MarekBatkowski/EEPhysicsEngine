@@ -11,12 +11,14 @@ public class Ball
 
     Color color;
     Color color2;               // inner
-    private int ringSize;     // inner
+    private int ringSize;       // inner
     private int diameter;
     private float mass;
-    float angle;
+    double angle;
+    double maxSpeed;
+    double elasticity;
 
-    public Ball(float x, float y, float xSpeed, float ySpeed, int diameter, int ringSize, Color color, Color color2, float mass)
+    public Ball(float x, float y, float xSpeed, float ySpeed, int diameter, int ringSize, Color color, Color color2, float mass, double maxSpeed, double elasticity)
     {
         this.xSpeed = xSpeed;
         this.ySpeed = ySpeed;
@@ -27,6 +29,8 @@ public class Ball
         this.color = color;
         this.color2 = color2;
         this.mass = mass;
+        this.maxSpeed = maxSpeed;
+        this.elasticity = elasticity;
     }
 
     public double getxSpeed()
@@ -89,9 +93,14 @@ public class Ball
         this.ringSize = ringSize;
     }
 
-    public double getSpeedVector()
+    public double getSpeedAngle()
     {
         return Math.atan2(getySpeed(), getxSpeed());
+    }
+
+    public double getSpeed()
+    {
+        return Math.pow(getxSpeed(),2)+Math.pow(getySpeed(),2);
     }
 }
 

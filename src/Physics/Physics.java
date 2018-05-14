@@ -7,6 +7,7 @@ public class Physics
     int ScreenSizeX, ScreenSizeY;
     ArrayList<Ball> Balls;
     ArrayList<Force> Forces;
+    float Friction = (float) 1;   // speed lost with every hit
 
     public Physics(int ScreenSizeX, int ScreenSizeY)
     {
@@ -28,18 +29,27 @@ public class Physics
     {
         for(int i=0; i<Balls.size(); i++)
         {
-            move(Balls.get(i));
-            CheckWalls(Balls.get(i));
-            for(int j=0; j<Balls.size(); j++)
-                if(j>i) CheckCollisions(Balls.get(i), Balls.get(j));
-
             for(Force f : Forces)
                 ApplyForce(Balls.get(i), f);
+
+            CheckWalls(Balls.get(i));
+
+            for(int j=0; j<Balls.size(); j++)
+                if(j>i) CheckCollisions(Balls.get(i), Balls.get(j));
+            move(Balls.get(i));
         }
     }
 
     public void move(Ball ball)
     {
+        //  System.out.println( Math.sqrt(Math.pow(ball.getxSpeed(),2)+Math.pow(ball.getySpeed(),2)) );
+
+        if(ball.getSpeed() > Math.pow(ball.maxSpeed,2)) // x^2 + y^2 > maxSpeed^2
+        {
+            ball.setxSpeed(ball.maxSpeed*Math.cos(ball.getSpeedAngle()));
+            ball.setySpeed(ball.maxSpeed*Math.sin(ball.getSpeedAngle()));
+        }
+
         ball.setX(ball.getX()+ball.getxSpeed());
         ball.setY(ball.getY()+ball.getySpeed());
     }
@@ -58,23 +68,41 @@ public class Physics
         if (ball.getX()-ball.getDiameter()/2 < 0)
         {
             ball.setX(ball.getDiameter()/2);
-            ball.setxSpeed(-ball.getxSpeed());
+            ball.setxSpeed(-ball.getxSpeed() * ball.elasticity);
+        //    ApplyFriction(ball);
         }
-        else if (ball.getX()+ball.getDiameter()/2 > ScreenSizeX-10)
+        else if (ball.getX()+ball.getDiameter()/2 > ScreenSizeX-17)
         {
-            ball.setX(ScreenSizeX-10-ball.getDiameter()/2);
-            ball.setxSpeed(-ball.getxSpeed());
+            ball.setX(ScreenSizeX-17-ball.getDiameter()/2);
+            ball.setxSpeed(-ball.getxSpeed() * ball.elasticity);
+        //    ApplyFriction(ball);
         }
 
         if (ball.getY() - ball.getDiameter()/2 < 0)
         {
             ball.setY(ball.getDiameter()/2);
-            ball.setySpeed(-ball.getySpeed());
+            ball.setySpeed(-ball.getySpeed()*ball.elasticity);
+        //    ApplyFriction(ball);
         }
         else if (ball.getY()+ball.getDiameter()/2 > ScreenSizeY-40)
         {
             ball.setY(ScreenSizeY-40-ball.getDiameter()/2);
-            ball.setySpeed(-ball.getySpeed());
+            ball.setySpeed(-ball.getySpeed()*ball.elasticity);
+        //    ApplyFriction(ball);
+        }
+    }
+
+    void ApplyFriction(Ball ball)
+    {
+        if(ball.getSpeed()> Friction)
+        {
+            ball.setxSpeed(ball.getxSpeed() - Friction * Math.cos(ball.getSpeedAngle()));
+            ball.setySpeed(ball.getySpeed() - Friction * Math.sin(ball.getSpeedAngle()));
+        }
+        else
+        {
+            ball.setxSpeed(0);
+            ball.setySpeed(0);
         }
     }
 
@@ -86,16 +114,28 @@ public class Physics
 
         if (distance < (ballOne.getDiameter() / 2 + ballTwo.getDiameter() / 2) * (ballOne.getDiameter() / 2 + ballTwo.getDiameter() / 2))
         {
+            double angle = Math.atan2(ballOne.getY()-ballTwo.getY(), ballOne.getX()-ballTwo.getX());
+
+
+
             double newxSpeed1 = (ballOne.getxSpeed() * (-3) + (14 * ballTwo.getxSpeed())) / 11;
             double newySpeed1 = (ballOne.getySpeed() * (-3) + (14 * ballTwo.getySpeed())) / 11;
 
             double newxSpeed2 = (ballTwo.getxSpeed() * (3) + (8 * ballOne.getxSpeed())) / 11;
             double newySpeed2 = (ballTwo.getySpeed() * (3) + (8 * ballOne.getySpeed())) / 11;
 
-            ballOne.setxSpeed(newxSpeed1);
-            ballOne.setySpeed(newySpeed1);
-            ballTwo.setxSpeed(newxSpeed2);
-            ballTwo.setySpeed(newySpeed2);
+            ballOne.setxSpeed(newxSpeed1*ballOne.elasticity);
+            ballOne.setySpeed(newySpeed1*ballOne.elasticity);
+            ballTwo.setxSpeed(newxSpeed2*ballTwo.elasticity);
+            ballTwo.setySpeed(newySpeed2*ballTwo.elasticity);
+        //    ApplyFriction(ballOne);
+        //    ApplyFriction(ballTwo);
         }
     }
+
+    double AngleBetween(Ball One, Ball Two)
+    {
+        return Math.atan2(Two.getY()-One.getY(), Two.getX()-One.getX());
+    }
+
 }
