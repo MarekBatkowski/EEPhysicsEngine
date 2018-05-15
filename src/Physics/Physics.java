@@ -7,7 +7,7 @@ public class Physics
     int ScreenSizeX, ScreenSizeY;
     ArrayList<Ball> Balls;
     ArrayList<Force> Forces;
-    float Friction = (float) 1;   // speed lost with every hit
+    float Friction = (float) 2;   // speed lost with every hit
 
     public Physics(int ScreenSizeX, int ScreenSizeY)
     {
@@ -110,13 +110,11 @@ public class Physics
     {
         double deltaX = Math.abs(ballOne.getX() - ballTwo.getX());
         double deltaY = Math.abs(ballOne.getY() - ballTwo.getY());
-        double distance = deltaX * deltaX + deltaY * deltaY;
+        double distance = Math.pow(deltaX, 2) + Math.pow(deltaY, 2);
 
-        if (distance < (ballOne.getDiameter() / 2 + ballTwo.getDiameter() / 2) * (ballOne.getDiameter() / 2 + ballTwo.getDiameter() / 2))
+        if(distance <= (ballOne.getDiameter() / 2 + ballTwo.getDiameter() / 2) * (ballOne.getDiameter() / 2 + ballTwo.getDiameter() / 2))
         {
             double angle = Math.atan2(ballOne.getY()-ballTwo.getY(), ballOne.getX()-ballTwo.getX());
-
-
 
             double newxSpeed1 = (ballOne.getxSpeed() * (-3) + (14 * ballTwo.getxSpeed())) / 11;
             double newySpeed1 = (ballOne.getySpeed() * (-3) + (14 * ballTwo.getySpeed())) / 11;
@@ -128,8 +126,17 @@ public class Physics
             ballOne.setySpeed(newySpeed1*ballOne.elasticity);
             ballTwo.setxSpeed(newxSpeed2*ballTwo.elasticity);
             ballTwo.setySpeed(newySpeed2*ballTwo.elasticity);
-        //    ApplyFriction(ballOne);
-        //    ApplyFriction(ballTwo);
+            //ApplyFriction(ballOne);
+            //ApplyFriction(ballTwo);
+
+            if(distance <= (ballOne.getDiameter() / 2 + ballTwo.getDiameter() / 2) * (ballOne.getDiameter() / 2 + ballTwo.getDiameter() / 2))
+            {
+                ballOne.setX(ballOne.getX()+ Math.cos(ballOne.getSpeedAngle()+Math.PI));
+                ballOne.setY(ballOne.getY()+ Math.sin(ballOne.getSpeedAngle()+Math.PI));
+
+                ballTwo.setX(ballTwo.getX()+ Math.cos(ballTwo.getSpeedAngle()+Math.PI));
+                ballTwo.setY(ballTwo.getY()+ Math.sin(ballTwo.getSpeedAngle()+Math.PI));
+            }
         }
     }
 
@@ -137,5 +144,4 @@ public class Physics
     {
         return Math.atan2(Two.getY()-One.getY(), Two.getX()-One.getX());
     }
-
 }
