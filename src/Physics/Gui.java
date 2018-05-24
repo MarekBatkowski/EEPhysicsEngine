@@ -17,10 +17,10 @@ public class Gui extends JPanel implements Runnable
     public Gui(Physics physics)
     {
         this.physics = physics;
-
-        ball1 = new Ball(50, 100, 0, 1, 70, 10, Color.black, Color.blue, 70, 50, 1);
-        ball2 = new Ball(250, 300, 1, 0, 40, 10, Color.black, Color.red, 40, 50, 1);
-        ball3 = new Ball(200, 200, 0, 0, 50, 10, Color.black, Color.green, 50, 50, 1);
+        double friction = .9;
+        ball1 = new Ball(50, 100, 0, 1, 70, 10, Color.black, Color.blue, 70, 50, friction);
+        ball2 = new Ball(250, 300, 1, 0, 40, 10, Color.black, Color.red, 40, 50, friction);
+        ball3 = new Ball(200, 200, 0, 0, 50, 10, Color.black, Color.green, 50, 50, friction);
 
         Balls.add(ball1);
         Balls.add(ball2);

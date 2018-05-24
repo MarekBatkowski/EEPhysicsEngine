@@ -7,7 +7,7 @@ public class Physics
     int ScreenSizeX, ScreenSizeY;
     ArrayList<Ball> Balls;
     ArrayList<Force> Forces;
-    float Friction = (float) 2;   // speed lost with every hit
+    float Friction = (float) 1;   // speed lost with every hit
 
     public Physics(int ScreenSizeX, int ScreenSizeY)
     {
@@ -69,26 +69,26 @@ public class Physics
         {
             ball.setX(ball.getDiameter()/2);
             ball.setxSpeed(-ball.getxSpeed() * ball.elasticity);
-        //    ApplyFriction(ball);
+            ApplyFriction(ball);
         }
         else if (ball.getX()+ball.getDiameter()/2 > ScreenSizeX-17)
         {
             ball.setX(ScreenSizeX-17-ball.getDiameter()/2);
             ball.setxSpeed(-ball.getxSpeed() * ball.elasticity);
-        //    ApplyFriction(ball);
+            ApplyFriction(ball);
         }
 
         if (ball.getY() - ball.getDiameter()/2 < 0)
         {
             ball.setY(ball.getDiameter()/2);
             ball.setySpeed(-ball.getySpeed()*ball.elasticity);
-        //    ApplyFriction(ball);
+            ApplyFriction(ball);
         }
         else if (ball.getY()+ball.getDiameter()/2 > ScreenSizeY-40)
         {
             ball.setY(ScreenSizeY-40-ball.getDiameter()/2);
             ball.setySpeed(-ball.getySpeed()*ball.elasticity);
-        //    ApplyFriction(ball);
+            ApplyFriction(ball);
         }
     }
 
@@ -131,11 +131,11 @@ public class Physics
 
             if(distance <= (ballOne.getDiameter() / 2 + ballTwo.getDiameter() / 2) * (ballOne.getDiameter() / 2 + ballTwo.getDiameter() / 2))
             {
-                ballOne.setX(ballOne.getX()+ Math.cos(ballOne.getSpeedAngle()+Math.PI));
-                ballOne.setY(ballOne.getY()+ Math.sin(ballOne.getSpeedAngle()+Math.PI));
+                ballOne.setX(ballOne.getX()+ Math.cos(ballOne.getSpeedAngle()));
+                ballOne.setY(ballOne.getY()+ Math.sin(ballOne.getSpeedAngle()));
 
-                ballTwo.setX(ballTwo.getX()+ Math.cos(ballTwo.getSpeedAngle()+Math.PI));
-                ballTwo.setY(ballTwo.getY()+ Math.sin(ballTwo.getSpeedAngle()+Math.PI));
+                ballTwo.setX(ballTwo.getX()+ Math.cos(ballTwo.getSpeedAngle()));
+                ballTwo.setY(ballTwo.getY()+ Math.sin(ballTwo.getSpeedAngle()));
             }
         }
     }
