@@ -1,11 +1,12 @@
 package Physics;
 
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
 
-public class Physics
+public class Physics extends Thread
 {
     int ScreenSizeX, ScreenSizeY;
-    ArrayList<Ball> Balls;
+    ArrayList<PhysicsObject> objects;
     ArrayList<Force> Forces;
     float Friction = (float) 1;   // speed lost with every hit
 
@@ -15,9 +16,23 @@ public class Physics
         this.ScreenSizeY = ScreenSizeY;
     }
 
-    public void setBalls(ArrayList<Ball> Balls)
+    @Override
+    public void run()
     {
-        this.Balls = Balls;
+        while (true)
+        {
+            try
+            {
+                Update(objects);
+                Thread.sleep(5);
+            }
+            catch (InterruptedException ex) { }
+        }
+    }
+
+    public void setObjects(ArrayList<PhysicsObject> Balls)
+    {
+        this.objects = Balls;
     }
 
     public void setForces(ArrayList<Force> Forces)
@@ -25,123 +40,172 @@ public class Physics
         this.Forces = Forces;
     }
 
-    public void Update(ArrayList<Ball> Balls)
+    public void Update(ArrayList<PhysicsObject> Objects)
     {
-        for(int i=0; i<Balls.size(); i++)
+        for(int i=0; i<Objects.size(); i++)
         {
             for(Force f : Forces)
-                ApplyForce(Balls.get(i), f);
+                ApplyForce(Objects.get(i), f);
 
-            CheckWalls(Balls.get(i));
+            CheckWalls(Objects.get(i));
 
-            for(int j=0; j<Balls.size(); j++)
-                if(j>i) CheckCollisions(Balls.get(i), Balls.get(j));
-            move(Balls.get(i));
+            for(int j=0; j<Objects.size(); j++)
+                if(j>i) CheckCollisions(Objects.get(i), Objects.get(j));
+            move(Objects.get(i));
         }
     }
 
-    public void move(Ball ball)
+    public void move(PhysicsObject object)
     {
         //  System.out.println( Math.sqrt(Math.pow(ball.getxSpeed(),2)+Math.pow(ball.getySpeed(),2)) );
 
-        if(ball.getSpeed() > Math.pow(ball.maxSpeed,2)) // x^2 + y^2 > maxSpeed^2
+        if(object.getSpeed() > Math.pow(object.maxSpeed,2)) // x^2 + y^2 > maxSpeed^2
         {
-            ball.setxSpeed(ball.maxSpeed*Math.cos(ball.getSpeedAngle()));
-            ball.setySpeed(ball.maxSpeed*Math.sin(ball.getSpeedAngle()));
+            object.setxSpeed(object.maxSpeed*Math.cos(object.getSpeedAngle()));
+            object.setySpeed(object.maxSpeed*Math.sin(object.getSpeedAngle()));
         }
 
-        ball.setX(ball.getX()+ball.getxSpeed());
-        ball.setY(ball.getY()+ball.getySpeed());
+        object.setX(object.getX()+object.getxSpeed());
+        object.setY(object.getY()+object.getySpeed());
+
+        object.angle+=object.rotationSpeed;
     }
 
-    public void ApplyForce(Ball ball, Force force)
+    public void ApplyForce(PhysicsObject physicsObject, Force force)
     {
-        double deltaX = Math.cos(force.angle)*force.value;
-        double deltaY = Math.sin(force.angle)*force.value;
+        double deltaX, deltaY;
 
-        ball.setxSpeed(ball.getxSpeed()+deltaX);
-        ball.setySpeed(ball.getySpeed()+deltaY);
-    }
-
-    public void CheckWalls(Ball ball)
-    {
-        if (ball.getX()-ball.getDiameter()/2 < 0)
+        if(force.gravityLike)
         {
-            ball.setX(ball.getDiameter()/2);
-            ball.setxSpeed(-ball.getxSpeed() * ball.elasticity);
-            ApplyFriction(ball);
-        }
-        else if (ball.getX()+ball.getDiameter()/2 > ScreenSizeX-17)
-        {
-            ball.setX(ScreenSizeX-17-ball.getDiameter()/2);
-            ball.setxSpeed(-ball.getxSpeed() * ball.elasticity);
-            ApplyFriction(ball);
-        }
-
-        if (ball.getY() - ball.getDiameter()/2 < 0)
-        {
-            ball.setY(ball.getDiameter()/2);
-            ball.setySpeed(-ball.getySpeed()*ball.elasticity);
-            ApplyFriction(ball);
-        }
-        else if (ball.getY()+ball.getDiameter()/2 > ScreenSizeY-40)
-        {
-            ball.setY(ScreenSizeY-40-ball.getDiameter()/2);
-            ball.setySpeed(-ball.getySpeed()*ball.elasticity);
-            ApplyFriction(ball);
-        }
-    }
-
-    void ApplyFriction(Ball ball)
-    {
-        if(ball.getSpeed()> Friction)
-        {
-            ball.setxSpeed(ball.getxSpeed() - Friction * Math.cos(ball.getSpeedAngle()));
-            ball.setySpeed(ball.getySpeed() - Friction * Math.sin(ball.getSpeedAngle()));
+            deltaX = Math.cos(force.angle) * force.value;
+            deltaY = Math.sin(force.angle) * force.value;
         }
         else
         {
-            ball.setxSpeed(0);
-            ball.setySpeed(0);
+            deltaX = Math.cos(force.angle) * force.value/physicsObject.mass;
+            deltaY = Math.sin(force.angle) * force.value/physicsObject.mass;
         }
+
+        physicsObject.setxSpeed(physicsObject.getxSpeed()+deltaX);
+        physicsObject.setySpeed(physicsObject.getySpeed()+deltaY);
     }
 
-    public void CheckCollisions(Ball ballOne, Ball ballTwo)
+    double AngleBetween(PhysicsObject One, PhysicsObject Two)
     {
-        double deltaX = Math.abs(ballOne.getX() - ballTwo.getX());
-        double deltaY = Math.abs(ballOne.getY() - ballTwo.getY());
-        double distance = Math.pow(deltaX, 2) + Math.pow(deltaY, 2);
+        return Math.atan2(Two.getY()-One.getY(), Two.getX()-One.getX());
+    }
 
-        if(distance <= (ballOne.getDiameter() / 2 + ballTwo.getDiameter() / 2) * (ballOne.getDiameter() / 2 + ballTwo.getDiameter() / 2))
+    public void CheckWalls(PhysicsObject object)
+    {
+        if(object.type.equals("Circle"))
         {
-            double angle = Math.atan2(ballOne.getY()-ballTwo.getY(), ballOne.getX()-ballTwo.getX());
-
-            double newxSpeed1 = (ballOne.getxSpeed() * (-3) + (14 * ballTwo.getxSpeed())) / 11;
-            double newySpeed1 = (ballOne.getySpeed() * (-3) + (14 * ballTwo.getySpeed())) / 11;
-
-            double newxSpeed2 = (ballTwo.getxSpeed() * (3) + (8 * ballOne.getxSpeed())) / 11;
-            double newySpeed2 = (ballTwo.getySpeed() * (3) + (8 * ballOne.getySpeed())) / 11;
-
-            ballOne.setxSpeed(newxSpeed1*ballOne.elasticity);
-            ballOne.setySpeed(newySpeed1*ballOne.elasticity);
-            ballTwo.setxSpeed(newxSpeed2*ballTwo.elasticity);
-            ballTwo.setySpeed(newySpeed2*ballTwo.elasticity);
-            //ApplyFriction(ballOne);
-            //ApplyFriction(ballTwo);
-
-            if(distance <= (ballOne.getDiameter() / 2 + ballTwo.getDiameter() / 2) * (ballOne.getDiameter() / 2 + ballTwo.getDiameter() / 2))
+            if (object.getX()-object.getDiameter()/2 < 0)
             {
-                ballOne.setX(ballOne.getX()+ Math.cos(ballOne.getSpeedAngle()));
-                ballOne.setY(ballOne.getY()+ Math.sin(ballOne.getSpeedAngle()));
+                object.setX(object.getDiameter()/2);
+                object.setxSpeed(-object.getxSpeed() * object.elasticity);
+                ApplyFriction(object);
+            }
+            else if (object.getX()+object.getDiameter()/2 > ScreenSizeX-17)
+            {
+                object.setX(ScreenSizeX-17-object.getDiameter()/2);
+                object.setxSpeed(-object.getxSpeed() * object.elasticity);
+                ApplyFriction(object);
+            }
 
-                ballTwo.setX(ballTwo.getX()+ Math.cos(ballTwo.getSpeedAngle()));
-                ballTwo.setY(ballTwo.getY()+ Math.sin(ballTwo.getSpeedAngle()));
+            if (object.getY() - object.getDiameter()/2 < 0)
+            {
+                object.setY(object.getDiameter()/2);
+                object.setySpeed(-object.getySpeed()*object.elasticity);
+                ApplyFriction(object);
+            }
+            else if (object.getY()+object.getDiameter()/2 > ScreenSizeY-40)
+            {
+                object.setY(ScreenSizeY-40-object.getDiameter()/2);
+                object.setySpeed(-object.getySpeed()*object.elasticity);
+                ApplyFriction(object);
+            }
+        }
+        else if(object.type.equals("Rectangle"))
+        {
+            Point2D points[] = object.getPoints();
+            for(int i=0; i<4; i++)
+            {
+                if (points[i].getX()<0)
+                {
+                    while(points[i].getX()<0)
+                        object.x++;
+                    object.setxSpeed(-object.getxSpeed() * object.elasticity);
+                    ApplyFriction(object);
+                }
+                else if (points[i].getX()>ScreenSizeX-17)
+                {
+                    while(points[i].getX()>ScreenSizeX-17)
+                        object.x--;
+                    object.setxSpeed(-object.getxSpeed() * object.elasticity);
+                    ApplyFriction(object);
+                }
+
+                if (points[i].getY()<0)
+                {
+                    while(points[i].getY()<0)
+                        object.y++;
+                    object.setySpeed(-object.getySpeed()*object.elasticity);
+                    ApplyFriction(object);
+                }
+                else if (points[i].getY()>ScreenSizeY-40)
+                {
+                    while(points[i].getY()>ScreenSizeY-40)
+                        object.y--;
+                    object.setySpeed(-object.getySpeed()*object.elasticity);
+                    ApplyFriction(object);
+                }
             }
         }
     }
 
-    double AngleBetween(Ball One, Ball Two)
+    void ApplyFriction(PhysicsObject object)
     {
-        return Math.atan2(Two.getY()-One.getY(), Two.getX()-One.getX());
+        if(object.getSpeed()> Friction)
+        {
+            object.setxSpeed(object.getxSpeed() - Friction * Math.cos(object.getSpeedAngle()));
+            object.setySpeed(object.getySpeed() - Friction * Math.sin(object.getSpeedAngle()));
+        }
+        else
+        {
+            object.setxSpeed(0);
+            object.setySpeed(0);
+        }
+    }
+
+    public void CheckCollisions(PhysicsObject objectOne, PhysicsObject objectTwo)
+    {
+        double deltaX = Math.abs(objectOne.getX() - objectTwo.getX());
+        double deltaY = Math.abs(objectOne.getY() - objectTwo.getY());
+        double distance = Math.pow(deltaX, 2) + Math.pow(deltaY, 2);
+
+        if(distance <= (objectOne.getDiameter() / 2 + objectTwo.getDiameter() / 2) * (objectOne.getDiameter() / 2 + objectTwo.getDiameter() / 2))
+        {
+            double angle = Math.atan2(objectOne.getY()-objectTwo.getY(), objectOne.getX()-objectTwo.getX());
+
+            double newxSpeed1 = (objectOne.getxSpeed() * (-3) + (14 * objectTwo.getxSpeed())) / 11;
+            double newySpeed1 = (objectOne.getySpeed() * (-3) + (14 * objectTwo.getySpeed())) / 11;
+
+            double newxSpeed2 = (objectTwo.getxSpeed() * (3) + (8 * objectOne.getxSpeed())) / 11;
+            double newySpeed2 = (objectTwo.getySpeed() * (3) + (8 * objectOne.getySpeed())) / 11;
+
+            objectOne.setxSpeed(newxSpeed1*objectOne.elasticity);
+            objectOne.setySpeed(newySpeed1*objectOne.elasticity);
+            objectTwo.setxSpeed(newxSpeed2*objectTwo.elasticity);
+            objectTwo.setySpeed(newySpeed2*objectTwo.elasticity);
+
+            if(distance <= (objectOne.getDiameter() / 2 + objectTwo.getDiameter() / 2) * (objectOne.getDiameter() / 2 + objectTwo.getDiameter() / 2))
+            {
+                objectOne.setX(objectOne.getX()+ Math.cos(objectOne.getSpeedAngle()));
+                objectOne.setY(objectOne.getY()+ Math.sin(objectOne.getSpeedAngle()));
+
+                objectTwo.setX(objectTwo.getX()+ Math.cos(objectTwo.getSpeedAngle()));
+                objectTwo.setY(objectTwo.getY()+ Math.sin(objectTwo.getSpeedAngle()));
+            }
+        }
     }
 }

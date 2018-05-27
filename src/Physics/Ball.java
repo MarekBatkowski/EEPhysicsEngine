@@ -1,29 +1,22 @@
 package Physics;
 
-import java.awt.Color;
+import java.awt.*;
 
-public class Ball
+public class Ball extends PhysicsObject
 {
-    private double x;
-    private double y;
-    private double xSpeed;
-    private double ySpeed;
-
-    Color color;
-    Color color2;               // inner
+    private Color color;
+    private Color color2;       // inner
     private int ringSize;       // inner
     private int diameter;
-    private float mass;
-    double angle;
-    double maxSpeed;
-    double elasticity;
 
-    public Ball(float x, float y, float xSpeed, float ySpeed, int diameter, int ringSize, Color color, Color color2, float mass, double maxSpeed, double elasticity)
+    public Ball(float x, float y, float xSpeed, float ySpeed, double angle, double rotationSpeed, float mass, double maxSpeed, double elasticity, Color color, Color color2, int diameter, int ringSize)
     {
-        this.xSpeed = xSpeed;
-        this.ySpeed = ySpeed;
         this.x = x;
         this.y = y;
+        this.xSpeed = xSpeed;
+        this.ySpeed = ySpeed;
+        this.angle = angle;
+        this.rotationSpeed = rotationSpeed;
         this.diameter = diameter;
         this.ringSize = ringSize;
         this.color = color;
@@ -31,46 +24,7 @@ public class Ball
         this.mass = mass;
         this.maxSpeed = maxSpeed;
         this.elasticity = elasticity;
-    }
-
-    public double getxSpeed()
-    {
-        return xSpeed;
-    }
-
-    public void setxSpeed(double xSpeed)
-    {
-        this.xSpeed = xSpeed;
-    }
-
-    public double getySpeed()
-    {
-        return ySpeed;
-    }
-
-    public void setySpeed(double ySpeed)
-    {
-        this.ySpeed = ySpeed;
-    }
-
-    public double getX()
-    {
-        return x;
-    }
-
-    public void setX(double x)
-    {
-        this.x = x;
-    }
-
-    public double getY()
-    {
-        return y;
-    }
-
-    public void setY(double y)
-    {
-        this.y = y;
+        this.type = "Circle";
     }
 
     public int getDiameter()
@@ -93,14 +47,16 @@ public class Ball
         this.ringSize = ringSize;
     }
 
-    public double getSpeedAngle()
+    @Override
+    public void draw(Graphics2D g2d)
     {
-        return Math.atan2(getySpeed(), getxSpeed());
-    }
+        g2d.setColor(color);
+        g2d.fillOval((int) (getX() - getDiameter()/2), (int) (getY() - getDiameter()/2), getDiameter(), getDiameter());
+        g2d.setColor(color2);
+        g2d.fillOval((int) (getX() - getRingSize()/2), (int) (getY() - getRingSize()/2), getRingSize(), getRingSize());
 
-    public double getSpeed()
-    {
-        return Math.pow(getxSpeed(),2)+Math.pow(getySpeed(),2);
+        double angle = getSpeedAngle();
+        g2d.drawLine((int) getX(), (int) getY(), (int) (getX() + Math.cos(angle)*getDiameter()/2), (int) (getY() + Math.sin(angle)*getDiameter()/2));
     }
 }
 
