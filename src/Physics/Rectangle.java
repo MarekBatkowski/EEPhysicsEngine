@@ -14,9 +14,9 @@ public class Rectangle extends PhysicsObject
     private double height;
 
     private Rectangle2D rectangle;
-    Point2D points[];
+    private Point2D points[];
 
-    public Rectangle(float x, float y, float xSpeed, float ySpeed, double angle, double rotationSpeed, float mass, double maxSpeed, double elasticity, Color color, Color color2, double width, double height)
+    public Rectangle(double x, double y, double xSpeed, double ySpeed, double angle, double rotationSpeed, double mass, double maxSpeed, double elasticity, Color color, Color color2, double width, double height)
     {
         this.x = x;
         this.y = y;
@@ -54,10 +54,8 @@ public class Rectangle extends PhysicsObject
         points[2].setLocation(x - width/2, y + height/2);
         points[3].setLocation(x + width/2, y + height/2);
 
-        rotation.transform(points[0], points[0]);
-        rotation.transform(points[1], points[1]);
-        rotation.transform(points[2], points[2]);
-        rotation.transform(points[3], points[3]);
+        for(int i=0; i<4; i++)
+            rotation.transform(points[i], points[i]);
 
         g2d.setColor(color);
         g2d.fill(rotation.createTransformedShape(rectangle));

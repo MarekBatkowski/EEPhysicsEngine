@@ -64,7 +64,7 @@ public class PhysicsObject
 
     public double getSpeed()
     {
-        return Math.pow(getxSpeed(),2)+Math.pow(getySpeed(),2);
+        return Math.sqrt(Math.pow(getxSpeed(),2)+Math.pow(getySpeed(),2));
     }
 
     public int getDiameter()
