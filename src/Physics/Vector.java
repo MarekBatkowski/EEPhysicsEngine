@@ -1,6 +1,6 @@
 package Physics;
 
-public final class Vector
+public class Vector
 {
     private double x;
     private double y;
@@ -11,7 +11,7 @@ public final class Vector
         this.y = y;
     }
 
-    public Vector(double angle, double value, boolean fromvector)
+    public Vector(double value, double angle, boolean fromvector)
     {
         this.x = value*Math.cos(angle);
         this.y = value*Math.sin(angle);
@@ -53,5 +53,15 @@ public final class Vector
     public Vector mul(double multipler)
     {
         return new Vector(x * multipler, y * multipler);
+    }
+
+    public Vector div(double multipler)
+    {
+        return new Vector(x / multipler, y / multipler);
+    }
+
+    @Override
+    public String toString() {
+        return "Vector x: " + x + ", y: " + y;
     }
 }

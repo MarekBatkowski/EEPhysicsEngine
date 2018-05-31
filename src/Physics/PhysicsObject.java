@@ -15,46 +15,34 @@ public class PhysicsObject
     protected double maxSpeed;
     protected double elasticity;
     protected String type;
+    boolean Movable;
     Point2D points[]= new Point2D[4];
 
-    public double getxSpeed()
+    public double getX() { return x; }
+
+    public void setX(double x) { this.x = x; }
+
+    public double getY() { return y; }
+
+    public void setY(double y) { this.y = y; }
+
+    public double getxSpeed() { return xSpeed; }
+
+    public void setxSpeed(double xSpeed) { this.xSpeed = xSpeed; }
+
+    public double getySpeed() { return ySpeed; }
+
+    public void setySpeed(double ySpeed) { this.ySpeed = ySpeed; }
+
+    public double getSpeed()
     {
-        return xSpeed;
+        return Math.sqrt(Math.pow(getxSpeed(),2)+Math.pow(getySpeed(),2));
     }
 
-    public void setxSpeed(double xSpeed)
+    public void setSpeed(Vector vector)
     {
-        this.xSpeed = xSpeed;
-    }
-
-    public double getySpeed()
-    {
-        return ySpeed;
-    }
-
-    public void setySpeed(double ySpeed)
-    {
-        this.ySpeed = ySpeed;
-    }
-
-    public double getX()
-    {
-        return x;
-    }
-
-    public void setX(double x)
-    {
-        this.x = x;
-    }
-
-    public double getY()
-    {
-        return y;
-    }
-
-    public void setY(double y)
-    {
-        this.y = y;
+        xSpeed = vector.getX();
+        ySpeed = vector.getY();
     }
 
     public double getSpeedAngle()
@@ -62,15 +50,27 @@ public class PhysicsObject
         return Math.atan2(getySpeed(), getxSpeed());
     }
 
-    public double getSpeed()
+    public Vector getSpeedVector()
     {
-        return Math.sqrt(Math.pow(getxSpeed(),2)+Math.pow(getySpeed(),2));
+        return new Vector(this.xSpeed, this.ySpeed);
     }
 
-    public int getDiameter()
+    public void setSpeedVector(Vector vector)
     {
-        return 0;
+        xSpeed = vector.getX();
+        ySpeed = vector.getY();
     }
+
+    public double getMass() { return mass; }
+
+    public void setMass(double mass) { this.mass = mass; }
+
+    public double getElasticity()
+    {
+        return elasticity;
+    }
+
+    public int getDiameter() { return 0; }
 
     public void draw(Graphics2D g2d)
     {
