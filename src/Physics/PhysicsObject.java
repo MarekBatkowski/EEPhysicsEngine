@@ -14,9 +14,24 @@ public class PhysicsObject
     protected double mass;
     protected double maxSpeed;
     protected double elasticity;
+    protected boolean movable;
     protected String type;
-    boolean Movable;
     Point2D points[]= new Point2D[4];
+
+    public PhysicsObject(double x, double y, double xSpeed, double ySpeed, double angle, double rotationSpeed, double mass, double maxSpeed, double elasticity, boolean movable, String type)
+    {
+        this.x = x;
+        this.y = y;
+        this.xSpeed = xSpeed;
+        this.ySpeed = ySpeed;
+        this.angle = angle;
+        this.rotationSpeed = rotationSpeed;
+        this.mass = mass;
+        this.maxSpeed = maxSpeed;
+        this.elasticity = elasticity;
+        this.movable = movable;
+        this.type = type;
+    }
 
     public double getX() { return x; }
 

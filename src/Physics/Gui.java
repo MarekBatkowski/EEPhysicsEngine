@@ -19,14 +19,15 @@ public class Gui extends JPanel implements Runnable
         physics.setObjects(Objects);
         physics.setForces(Forces);
 
-        //billard
-        Objects.add(new Ball(100, 300, 0, 0, 0, 0, 100, 50, elasticity, Color.black, Color.blue, 60, 10));
-        Objects.add(new Ball(300, 300, 0, 0, 0, 0, 100, 50, elasticity, Color.black, Color.green, 60, 10));
-    //    Objects.add(new Ball(400, 300, 3, 0, 0, 0, 100, 50, elasticity, Color.black, Color.yellow, 60, 10));
-    //    Objects.add(new Ball(500, 300, 0, 2, 0, 0, 100, 50, elasticity, Color.black, Color.red, 60, 10));
+        //Objects.add(new Ball(275, 100, 0.25, 2, 0, 0, 10, 50, elasticity, true, Color.black, Color.blue, 60, 10));
+        //Objects.add(new Ball(360, 300, 0, 0, 0, 0, 10, 50, elasticity, true, Color.black, Color.green, 60, 10));
 
-        //Forces.add(new Force(0.1, Math.PI/2, true)); //  gravity
-        //Forces.add(new Force(0.3, 0, false));        //  wind from left
+        Objects.add(new Ball(100, 300, 2, 0, 0, 0, 100, 50, elasticity, true, Color.black, Color.red, 60, 10));
+        Objects.add(new Ball(500, 300, 0, 0, 0, 0, 10, 50, elasticity, true, Color.black, Color.yellow, 60, 10));
+    //    Objects.add(new Rectangle(500, 300, 0, 1, 0, 0.5, 100, 50, 1, true, Color.black, Color.red, 80, 50));
+
+    //    Forces.add(new Force(0.1, Math.PI/2, true)); //  gravity
+    //    Forces.add(new Force(0.3, 0, false));        //  wind from left
 
         animator = new Thread(this);
         animator.start();

@@ -11,22 +11,14 @@ public class Ball extends PhysicsObject
     private int ringSize;       // inner
     private int diameter;
 
-    public Ball(double x, double y, double xSpeed, double ySpeed, double angle, double rotationSpeed, double mass, double maxSpeed, double elasticity, Color color, Color color2, int diameter, int ringSize)
+    public Ball(double x, double y, double xSpeed, double ySpeed, double angle, double rotationSpeed, double mass, double maxSpeed, double elasticity, boolean movable, Color color, Color color2, int diameter, int ringSize)
     {
-        this.x = x;
-        this.y = y;
-        this.xSpeed = xSpeed;
-        this.ySpeed = ySpeed;
-        this.angle = angle;
-        this.rotationSpeed = rotationSpeed;
+        super(x, y, xSpeed, ySpeed, angle, rotationSpeed, mass, maxSpeed, elasticity, movable, "Circle");
+
         this.diameter = diameter;
         this.ringSize = ringSize;
         this.color = color;
         this.color2 = color2;
-        this.mass = mass;
-        this.maxSpeed = maxSpeed;
-        this.elasticity = elasticity;
-        this.type = "Circle";
 
         points = new Point2D[4];
         points[0] = new Point2D.Double(x - diameter/2, y);
@@ -82,12 +74,6 @@ public class Ball extends PhysicsObject
             double angle = getSpeedAngle();
             g2d.drawLine((int) getX(), (int) getY(), (int) (getX() + Math.cos(angle)*getDiameter()/2), (int) (getY() + Math.sin(angle)*getDiameter()/2));
         */
-    }
-
-    @Override
-    public Point2D[] getPoints()
-    {
-        return points;
     }
 }
 

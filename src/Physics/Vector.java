@@ -1,9 +1,13 @@
 package Physics;
 
+import java.text.DecimalFormat;
+
 public class Vector
 {
     private double x;
     private double y;
+
+    private static DecimalFormat df = new DecimalFormat("0.000");
 
     public Vector(double x, double y)
     {
@@ -61,7 +65,8 @@ public class Vector
     }
 
     @Override
-    public String toString() {
-        return "Vector x: " + x + ", y: " + y;
+    public String toString()
+    {
+        return "x = " + df.format(x) + ", y = " + df.format(y);
     }
 }

@@ -10,28 +10,20 @@ public class Rectangle extends PhysicsObject
 {
     private Color color;
     private Color color2;
-    private double width;
-    private double height;
+    double width;
+    double height;
 
     private Rectangle2D rectangle;
-    private Point2D points[];
+    Point2D points[];
 
-    public Rectangle(double x, double y, double xSpeed, double ySpeed, double angle, double rotationSpeed, double mass, double maxSpeed, double elasticity, Color color, Color color2, double width, double height)
+    public Rectangle(double x, double y, double xSpeed, double ySpeed, double angle, double rotationSpeed, double mass, double maxSpeed, double elasticity, boolean movable, Color color, Color color2, double width, double height)
     {
-        this.x = x;
-        this.y = y;
-        this.xSpeed = xSpeed;
-        this.ySpeed = ySpeed;
-        this.angle = angle;
-        this.rotationSpeed = rotationSpeed;
-        this.mass = mass;
-        this.maxSpeed = maxSpeed;
-        this.elasticity = elasticity;
-        this.color = color;
-        this.color2 = color2;
+        super(x, y, xSpeed, ySpeed, angle, rotationSpeed, mass, maxSpeed, elasticity, movable, "Rectangle");
+
         this.width = width;
         this.height = height;
-        this.type = "Rectangle";
+        this.color = color;
+        this.color2 = color2;
 
         rectangle = new Rectangle2D.Double(x - width/2, y - height/2, width, height);
 

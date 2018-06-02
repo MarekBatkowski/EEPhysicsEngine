@@ -6,10 +6,10 @@ import java.util.ArrayList;
 
 public class Physics extends Thread
 {
+    private static DecimalFormat df = new DecimalFormat("0.###");
     int ScreenSizeX, ScreenSizeY;
     ArrayList<PhysicsObject> objects;
     ArrayList<Force> Forces;
-    private static DecimalFormat df3 = new DecimalFormat("0.###");
 
     public Physics(int ScreenSizeX, int ScreenSizeY)
     {
@@ -98,12 +98,12 @@ public class Physics extends Thread
             if (obj.getX()-obj.getDiameter()/2 < 0)
             {
                 obj.setX(obj.getDiameter()/2);
-                obj.setxSpeed(-obj.getxSpeed() * obj.elasticity);
+                obj.setxSpeed(-obj.getxSpeed()*obj.elasticity);
             }
-            else if (obj.getX()+obj.getDiameter()/2 > ScreenSizeX-17)
+            else if (obj.getX()+obj.getDiameter()/2 > ScreenSizeX-20)
             {
                 obj.setX(ScreenSizeX-20-obj.getDiameter()/2);
-                obj.setxSpeed(-obj.getxSpeed() * obj.elasticity);
+                obj.setxSpeed(-obj.getxSpeed()*obj.elasticity);
             }
 
             if (obj.getY() - obj.getDiameter()/2 < 0)
@@ -117,42 +117,36 @@ public class Physics extends Thread
                 obj.setySpeed(-obj.getySpeed()*obj.elasticity);
             }
         }
+
         else if(obj.type.equals("Rectangle"))
         {
-            Point2D points[] = obj.getPoints();
-            for(int i=0; i<4; i++)
+            Rectangle temp = (Rectangle) obj;
+
+            Point2D points[] = temp.getPoints();
+            for(int i=0; i<1; i++)
             {
                 if (points[i].getX()<0)
                 {
-                 //   while(points[i].getX()<0)
-                 //       obj.x++;
-                    obj.setxSpeed(-obj.getxSpeed() * obj.elasticity);
-                    obj.rotationSpeed=-obj.rotationSpeed;
+                    System.out.println(i);
+                    obj.setxSpeed(-obj.getxSpeed()*obj.elasticity);
                 }
-                else if (points[i].getX()>ScreenSizeX-17)
+                else if (points[i].getX()>ScreenSizeX-20)
                 {
-                 //   while(points[i].getX()>ScreenSizeX-17)
-                 //       obj.x--;
-                    obj.setxSpeed(-obj.getxSpeed() * obj.elasticity);
-                    obj.rotationSpeed=-obj.rotationSpeed;
+                    System.out.println(i);
+                    obj.setxSpeed(-obj.getxSpeed()*obj.elasticity);
                 }
 
                 if (points[i].getY()<0)
                 {
-                    int temp = (int) points[i].getY();
-                    obj.y-=temp+2;
-
+                    System.out.println(i);
                     obj.setySpeed(-obj.getySpeed()*obj.elasticity);
-                    obj.rotationSpeed=-obj.rotationSpeed;
                 }
                 else if (points[i].getY()>ScreenSizeY-40)
                 {
-                    int temp = (int) points[i].getY()-(ScreenSizeY-40);
-                    obj.y-=temp+2;
-
+                    System.out.println(i);
                     obj.setySpeed(-obj.getySpeed()*obj.elasticity);
-                    obj.rotationSpeed=-obj.rotationSpeed;
                 }
+
             }
         }
     }
@@ -166,7 +160,7 @@ public class Physics extends Thread
     {
         if(objOne.type.equals("Circle") && objTwo.type.equals("Circle"))
         {
-            double distance = Math.sqrt( Math.pow(objOne.getX()-objTwo.getX(), 2) + Math.pow(objOne.getY()-objTwo.getY(), 2) );
+            double distance = Math.sqrt( Math.pow(objOne.getX()-objTwo.getX(),2) + Math.pow(objOne.getY()-objTwo.getY(),2) );
 
             if(distance <= (objOne.getDiameter()/2 + objTwo.getDiameter()/2))
             {
@@ -174,29 +168,68 @@ public class Physics extends Thread
                 double commonElasticy = objOne.getElasticity()*objTwo.getElasticity();
 
                 // prevents objects from entering each other
-                    Vector D1 = new Vector(((objOne.getDiameter() / 2 + objTwo.getDiameter() / 2) - distance) * objOne.mass / commonMass, AngleBetween(objTwo, objOne), true);
-                    Vector D2 = new Vector(((objOne.getDiameter() / 2 + objTwo.getDiameter() / 2) - distance) * objTwo.mass / commonMass, AngleBetween(objOne, objTwo), true);
+                Vector D1 = new Vector(((objOne.getDiameter()/2 + objTwo.getDiameter()/2) - distance) * objOne.mass / commonMass, AngleBetween(objTwo, objOne), true);
+                Vector D2 = new Vector(((objOne.getDiameter()/2 + objTwo.getDiameter()/2) - distance) * objTwo.mass / commonMass, AngleBetween(objOne, objTwo), true);
 
-                    objOne.setX(objOne.getX() + D1.getX());
-                    objOne.setY(objOne.getY() + D1.getY());
-                    objTwo.setX(objTwo.getX() + D2.getX());
-                    objTwo.setY(objTwo.getY() + D2.getY());
+                objOne.setX(objOne.getX() + D1.getX());
+                objOne.setY(objOne.getY() + D1.getY());
+                objTwo.setX(objTwo.getX() + D2.getX());
+                objTwo.setY(objTwo.getY() + D2.getY());
 
                 //momentums
-                Vector M1 = objOne.getSpeedVector().mul(objOne.getMass());
-                Vector M2 = objTwo.getSpeedVector().mul(objTwo.getMass());
+                Vector V1 = objOne.getSpeedVector();
+                Vector V2 = objTwo.getSpeedVector();
 
-                // non elastic parts
-                Vector M1d = objTwo.getSpeedVector().mul(objTwo.getMass());
-                Vector M2d = objOne.getSpeedVector().mul(objOne.getMass());
+                //elastic
+                Vector CosV1 = new Vector(objOne.getSpeed()*Math.cos(objOne.getSpeedAngle()-AngleBetween(objTwo, objOne)), AngleBetween(objTwo, objOne), true);
+                Vector SinV1 = V1.sub(CosV1);
+                Vector CosV2 = new Vector(objTwo.getSpeed()*Math.cos(objTwo.getSpeedAngle()-AngleBetween(objOne, objTwo)), AngleBetween(objOne, objTwo), true);
+                Vector SinV2 = V2.sub(CosV2);
 
-                //elastic parts
-                Vector M1dE = new Vector(objTwo.getSpeed()*Math.cos(objTwo.getSpeedAngle()-AngleBetween(objTwo, objOne)), AngleBetween(objTwo, objOne), true);
-                Vector M2dE = new Vector(objOne.getSpeed()*Math.cos(objOne.getSpeedAngle()-AngleBetween(objOne, objTwo)), AngleBetween(objOne, objTwo), true);
+                System.out.println("> " + objOne.getSpeedVector().toString() + " energy: " + df.format(Math.pow(objOne.getSpeed(),2)*objOne.getMass()) + " angle = " + df.format(Math.toDegrees(objOne.getSpeedAngle()-AngleBetween(objTwo, objOne))));
+                System.out.println("CosV1 = " + df.format(Math.cos(objOne.getSpeedAngle()-AngleBetween(objTwo, objOne))) + "      " + CosV1.toString());
+                System.out.println("SinV1 = " + df.format(Math.sin(objOne.getSpeedAngle()-AngleBetween(objTwo, objOne))) + "      " + SinV1.toString());
+                System.out.println("");
+                System.out.println("> " + objTwo.getSpeedVector().toString() + " energy: " + df.format(Math.pow(objTwo.getSpeed(),2)*objTwo.getMass()) + " angle = " + df.format(Math.toDegrees(objTwo.getSpeedAngle()-AngleBetween(objOne, objTwo))));
+                System.out.println("CosV2 = " + df.format(Math.cos(objTwo.getSpeedAngle()-AngleBetween(objOne, objTwo))) + "      " + CosV2.toString());
+                System.out.println("SinV2 = " + df.format(Math.sin(objTwo.getSpeedAngle()-AngleBetween(objOne, objTwo))) + "      " + SinV2.toString());
+                System.out.println("");
 
-                objOne.setSpeed(M1.add(M1d).add( M1dE.sub(M2dE).mul(objTwo.getMass()).mul(commonElasticy) ).div(commonMass));
-                objTwo.setSpeed(M2.add(M2d).add( M2dE.sub(M1dE).mul(objOne.getMass()).mul(commonElasticy) ).div(commonMass));
+                //  non elastic collision speed - common for both objects
+                Vector VnE = V1.mul(objOne.getMass()).add( (V2).mul(objTwo.getMass()) ).div(commonMass);
+
+                //  elastic parts
+                Vector V1E = V1.add( CosV2.mul(objTwo.getMass()).sub( CosV1.mul(objTwo.getMass()) ).div(commonMass/2) );
+                Vector V2E = V2.add( CosV1.mul(objOne.getMass()).sub( CosV2.mul(objOne.getMass()) ).div(commonMass/2) );
+
+                //objOne.setSpeed(VnE.mul(1-commonElasticy));
+                //objTwo.setSpeed(VnE.mul(1-commonElasticy));
+
+                objOne.setSpeed(V1E);
+                objTwo.setSpeed(V2E);
+
+                System.out.println("> " + objOne.getSpeedVector().mul(objOne.getMass()).toString() + " energy: " + df.format(Math.pow(objOne.getSpeed(),2)*objOne.getMass()));
+                System.out.println("> " + objTwo.getSpeedVector().mul(objOne.getMass()).toString() + " energy: " + df.format(Math.pow(objTwo.getSpeed(),2)*objTwo.getMass()));
+                System.out.println("");
             }
+        }
+
+        if(objOne.type.equals("Rectangle") && objTwo.type.equals("Circle") || objOne.type.equals("Circle") && objTwo.type.equals("Rectangle"))
+        {
+            if(objOne.type.equals("Rectangle") && objTwo.type.equals("Circle"))
+            {
+                PhysicsObject temp = objOne;
+                objOne = objTwo;    //  circle
+                objTwo = temp;      //  rectangle
+            }
+
+            for(int i=0; i<4; i++)
+                objOne.getPoints()[i] = new Point2D.Double(objOne.getDiameter()*Math.cos(objTwo.angle+Math.PI/2*i),Math.sin(objTwo.angle+Math.PI/2*i));
+        }
+
+        if(objOne.type.equals("Rectangle") && objTwo.type.equals("Rectangle"))
+        {
+
         }
     }
 }
