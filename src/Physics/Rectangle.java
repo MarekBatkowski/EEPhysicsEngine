@@ -46,8 +46,8 @@ public class Rectangle extends PhysicsObject
         points[2].setLocation(x - width/2, y + height/2);
         points[3].setLocation(x + width/2, y + height/2);
 
-        for(int i=0; i<4; i++)
-            rotation.transform(points[i], points[i]);
+        for(Point2D p : points)
+            rotation.transform(p, p);
 
         g2d.setColor(color);
         g2d.fill(rotation.createTransformedShape(rectangle));
@@ -58,7 +58,7 @@ public class Rectangle extends PhysicsObject
         g2d.draw(new Line2D.Double(points[0], points[3]));
         g2d.draw(new Line2D.Double(points[1], points[2]));
 
-        g2d.fillOval((int) x-2, (int) y-2, 5, 5);
+        g2d.fillOval((int) x-3, (int) y-3, 5, 5);
         for(int i=0; i<4; i++)
             g2d.fillOval((int) points[i].getX()-2, (int) points[i].getY()-2, 5, 5);
     }

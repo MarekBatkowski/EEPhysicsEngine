@@ -47,6 +47,8 @@ public class PhysicsObject
 
     public double getySpeed() { return ySpeed; }
 
+    public double getAngle() { return angle; }
+
     public void setySpeed(double ySpeed) { this.ySpeed = ySpeed; }
 
     public double getSpeed()

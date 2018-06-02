@@ -21,7 +21,8 @@ public class Ball extends PhysicsObject
         this.color2 = color2;
 
         points = new Point2D[4];
-        points[0] = new Point2D.Double(x - diameter/2, y);
+        for(int i=0; i<4; i++)
+            getPoints()[i] = new Point2D.Double(x,y);
     }
 
     public int getDiameter()
@@ -47,10 +48,6 @@ public class Ball extends PhysicsObject
     @Override
     public void draw(Graphics2D g2d)
     {
-        AffineTransform rotation = AffineTransform.getRotateInstance(Math.toRadians(angle), x, y);
-
-        points[0].setLocation(x - diameter/2, y);
-
         g2d.setColor(color);
         g2d.fillOval((int) (getX() - getDiameter()/2), (int) (getY() - getDiameter()/2), getDiameter(), getDiameter());
 
@@ -58,22 +55,10 @@ public class Ball extends PhysicsObject
         g2d.fillOval((int) (getX() - getRingSize()/2), (int) (getY() - getRingSize()/2), getRingSize(), getRingSize());
         g2d.drawOval((int) (getX() - getDiameter()/2), (int) (getY() - getDiameter()/2), getDiameter(), getDiameter());
 
-        rotation.transform(points[0], points[0]);
 
-        rotation = AffineTransform.getRotateInstance(Math.toRadians(60), x, y);
+        for( Point2D p : points)
+            g2d.fillOval((int) (p.getX()-2), (int) (p.getY()-2), 5, 5);
 
-        /*
-        for(int i=0; i<6; i++)
-        {
-            g2d.drawLine((int) getX(), (int) getY(), (int) points[0].getX(), (int) points[0].getY());
-            rotation.transform(points[0], points[0]);
-        }
-        */
-
-        /*
-            double angle = getSpeedAngle();
-            g2d.drawLine((int) getX(), (int) getY(), (int) (getX() + Math.cos(angle)*getDiameter()/2), (int) (getY() + Math.sin(angle)*getDiameter()/2));
-        */
     }
 }
 
