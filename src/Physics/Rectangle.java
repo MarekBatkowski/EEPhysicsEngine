@@ -52,6 +52,8 @@ public class Rectangle extends PhysicsObject
         g2d.setColor(color);
         g2d.fill(rotation.createTransformedShape(rectangle));
 
+        rotation.createTransformedShape(rectangle);
+
         g2d.setColor(color2);
         g2d.draw(rotation.createTransformedShape(rectangle));
 
@@ -67,5 +69,12 @@ public class Rectangle extends PhysicsObject
     public Point2D[] getPoints()
     {
         return points;
+    }
+
+    public Shape getShape()
+    {
+        AffineTransform rotation = AffineTransform.getRotateInstance(Math.toRadians(angle), x, y);
+        rectangle.setRect(x - width/2, y - height/2, width, height);
+        return rotation.createTransformedShape(rectangle);
     }
 }

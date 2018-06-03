@@ -1,5 +1,6 @@
 package Physics;
 
+import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
@@ -13,7 +14,7 @@ public class Physics extends Thread
     ArrayList<PhysicsObject> objects;
     ArrayList<Force> Forces;
 
-    boolean log = false;
+    boolean log = true;
 
     public Physics(int ScreenSizeX, int ScreenSizeY)
     {
@@ -113,23 +114,23 @@ public class Physics extends Thread
             {
                 if (points[i].getX()<0)
                 {
-                    System.out.println(i);
+                //    System.out.println(i);
                     obj.setxSpeed(-obj.getxSpeed()*obj.elasticity);
                 }
                 else if (points[i].getX()>ScreenSizeX-20)
                 {
-                    System.out.println(i);
+                 //   System.out.println(i);
                     obj.setxSpeed(-obj.getxSpeed()*obj.elasticity);
                 }
 
                 if (points[i].getY()<0)
                 {
-                    System.out.println(i);
+                //    System.out.println(i);
                     obj.setySpeed(-obj.getySpeed()*obj.elasticity);
                 }
                 else if (points[i].getY()>ScreenSizeY-40)
                 {
-                    System.out.println(i);
+                //    System.out.println(i);
                     obj.setySpeed(-obj.getySpeed()*obj.elasticity);
                 }
 
@@ -137,22 +138,9 @@ public class Physics extends Thread
         }
     }
 
-    double AngleBetween(PhysicsObject objOne, PhysicsObject objTwo)
+    double AngleBetween(Point2D P1, Point2D P2)
     {
-        return Math.atan2(objTwo.getY() - objOne.getY(), objTwo.getX() - objOne.getX());
-    }
-
-    Point2D getIntrsectionPoint(Line2D[] ballLines, Line2D[] rectSides)
-    {
-        for (Line2D bl : ballLines)
-        {
-            for (Line2D rS : rectSides)
-            {
-                if (rS.intersectsLine(bl))
-                    return  null;// bl.getP2();
-            }
-        }
-        return null;
+        return Math.atan2(P2.getY() - P1.getY(), P2.getX() - P1.getX());
     }
 
     public void CheckCollisions(PhysicsObject objOne, PhysicsObject objTwo)
@@ -171,8 +159,8 @@ public class Physics extends Thread
                         double commonElasticy = objOne.getElasticity()*objTwo.getElasticity();
 
                         // prevents objects from entering each other
-                        Vector D1 = new Vector(((objOne.getDiameter()/2 + objTwo.getDiameter()/2) - distance) * objTwo.mass / commonMass, AngleBetween(objTwo, objOne), true);
-                        Vector D2 = new Vector(((objOne.getDiameter()/2 + objTwo.getDiameter()/2) - distance) * objOne.mass / commonMass, AngleBetween(objOne, objTwo), true);
+                        Vector D1 = new Vector(((objOne.getDiameter()/2 + objTwo.getDiameter()/2) - distance) * objTwo.mass / commonMass, AngleBetween(objTwo.getXY(), objOne.getXY()), true);
+                        Vector D2 = new Vector(((objOne.getDiameter()/2 + objTwo.getDiameter()/2) - distance) * objOne.mass / commonMass, AngleBetween(objOne.getXY(), objTwo.getXY()), true);
 
                         objOne.setX(objOne.getX() + D1.getX());
                         objOne.setY(objOne.getY() + D1.getY());
@@ -184,20 +172,20 @@ public class Physics extends Thread
                         Vector V2 = objTwo.getSpeedVector();
 
                         //elastic
-                        Vector CosV1 = new Vector(objOne.getSpeed()*Math.cos(objOne.getSpeedAngle()-AngleBetween(objTwo, objOne)), AngleBetween(objTwo, objOne), true);
+                        Vector CosV1 = new Vector(objOne.getSpeed()*Math.cos(objOne.getSpeedAngle()-AngleBetween(objTwo.getXY(), objOne.getXY())), AngleBetween(objTwo.getXY(), objOne.getXY()), true);
                         Vector SinV1 = V1.sub(CosV1);
-                        Vector CosV2 = new Vector(objTwo.getSpeed()*Math.cos(objTwo.getSpeedAngle()-AngleBetween(objOne, objTwo)), AngleBetween(objOne, objTwo), true);
+                        Vector CosV2 = new Vector(objTwo.getSpeed()*Math.cos(objTwo.getSpeedAngle()-AngleBetween(objOne.getXY(), objTwo.getXY())), AngleBetween(objOne.getXY(), objTwo.getXY()), true);
                         Vector SinV2 = V2.sub(CosV2);
 
                         if(log)
                         {
-                            System.out.println("> " + objOne.getSpeedVector().toString() + " energy: " + df.format(Math.pow(objOne.getSpeed(), 2) * objOne.getMass()) + " angle = " + df.format(Math.toDegrees(objOne.getSpeedAngle() - AngleBetween(objTwo, objOne))));
-                            System.out.println("CosV1 = " + df.format(Math.cos(objOne.getSpeedAngle() - AngleBetween(objTwo, objOne))) + "      " + CosV1.toString());
-                            System.out.println("SinV1 = " + df.format(Math.sin(objOne.getSpeedAngle() - AngleBetween(objTwo, objOne))) + "      " + SinV1.toString());
+                            System.out.println("> " + objOne.getSpeedVector().toString() + " energy: " + df.format(Math.pow(objOne.getSpeed(), 2) * objOne.getMass()) + " angle = " + df.format(Math.toDegrees(objOne.getSpeedAngle() - AngleBetween(objTwo.getXY(), objOne.getXY()))));
+                            System.out.println("CosV1 = " + df.format(Math.cos(objOne.getSpeedAngle() - AngleBetween(objTwo.getXY(), objOne.getXY()))) + "      " + CosV1.toString());
+                            System.out.println("SinV1 = " + df.format(Math.sin(objOne.getSpeedAngle() - AngleBetween(objTwo.getXY(), objOne.getXY()))) + "      " + SinV1.toString());
                             System.out.println("");
-                            System.out.println("> " + objTwo.getSpeedVector().toString() + " energy: " + df.format(Math.pow(objTwo.getSpeed(), 2) * objTwo.getMass()) + " angle = " + df.format(Math.toDegrees(objTwo.getSpeedAngle() - AngleBetween(objOne, objTwo))));
-                            System.out.println("CosV2 = " + df.format(Math.cos(objTwo.getSpeedAngle() - AngleBetween(objOne, objTwo))) + "      " + CosV2.toString());
-                            System.out.println("SinV2 = " + df.format(Math.sin(objTwo.getSpeedAngle() - AngleBetween(objOne, objTwo))) + "      " + SinV2.toString());
+                            System.out.println("> " + objTwo.getSpeedVector().toString() + " energy: " + df.format(Math.pow(objTwo.getSpeed(), 2) * objTwo.getMass()) + " angle = " + df.format(Math.toDegrees(objTwo.getSpeedAngle() - AngleBetween(objOne.getXY(), objTwo.getXY()))));
+                            System.out.println("CosV2 = " + df.format(Math.cos(objTwo.getSpeedAngle() - AngleBetween(objOne.getXY(), objTwo.getXY()))) + "      " + CosV2.toString());
+                            System.out.println("SinV2 = " + df.format(Math.sin(objTwo.getSpeedAngle() - AngleBetween(objOne.getXY(), objTwo.getXY()))) + "      " + SinV2.toString());
                             System.out.println("");
                         }
 
@@ -227,15 +215,16 @@ public class Physics extends Thread
                             objTwo = temp;
                         }
                         // prevents objects from entering each other
-                        Vector D1 = new Vector(((objOne.getDiameter()/2 + objTwo.getDiameter()/2) - distance), AngleBetween(objTwo, objOne), true);
+                        Vector D1 = new Vector(((objOne.getDiameter()/2 + objTwo.getDiameter()/2) - distance), AngleBetween(objTwo.getXY(), objOne.getXY()), true);
 
                         objOne.setX(objOne.getX() + D1.getX());
                         objOne.setY(objOne.getY() + D1.getY());
 
                         double commonElasticy = objOne.getElasticity() * objTwo.getElasticity();
 
-                        double collisionAngle = AngleBetween(objTwo, objOne) - objOne.getSpeedAngle();
-                        double bounceAngle = objOne.getSpeedAngle() + 2 *collisionAngle;
+                        double collisionAngle = AngleBetween(objTwo.getXY(), objOne.getXY())+Math.PI/2;
+                        double temp = objOne.getSpeedAngle()-collisionAngle;
+                        double bounceAngle = collisionAngle - temp;
 
                         if(log)
                         {
@@ -243,7 +232,7 @@ public class Physics extends Thread
                             System.out.println(df.format(Math.toDegrees(bounceAngle)));
                         }
 
-                        objOne.setSpeed(new Vector(objOne.getSpeed(), AngleBetween(objTwo, objOne), true).mul(commonElasticy));
+                        objOne.setSpeed(new Vector(objOne.getSpeed(), bounceAngle, true).mul(commonElasticy));
                     }
                 }
             }
@@ -257,44 +246,69 @@ public class Physics extends Thread
                     objTwo = temp;      //  rectangle
                 }
 
-                if(objOne.movable && !objTwo.movable)
+                // collision as separate function - later
+                //Point2D collisionpoint = collide(PhysicsObject circle, PhysicsObject rectangle)
+
+                Rectangle objTwoR = (Rectangle) objTwo;
+                AffineTransform rotation = AffineTransform.getRotateInstance(Math.toRadians(objTwo.getAngle()), objOne.getX(), objOne.getY());
+
+                for (int i = 0; i < 4; i++)
+                    objOne.getPoints()[i].setLocation(objOne.getX() + objOne.getDiameter()/2*Math.cos(i*Math.PI/2), objOne.getY() + objOne.getDiameter()/2*Math.sin(i*Math.PI/2));
+
+                for (Point2D p : objOne.getPoints())
+                    rotation.transform(p, p);
+
+                Line2D[] ballLines = new Line2D[4];
+
+                for (int i=0; i<4; i++)
+                    ballLines[i] = new Line2D.Double(objOne.getX(), objTwo.getY(), objOne.getPoints()[i].getX(), objOne.getPoints()[i].getY());
+
+                Shape rectangle = objTwoR.getShape();
+
+                Point2D pointOfCollision = null;
+
+                for (Point2D p : objOne.getPoints())
+                    if(rectangle.contains(p))   pointOfCollision = p;
+
+                if(pointOfCollision!=null)
                 {
-                    AffineTransform rotation = AffineTransform.getRotateInstance(Math.toRadians(objTwo.getAngle()), objOne.getX(), objOne.getY());
+                    if(objOne.movable && !objTwo.movable)   // ball is movable, rectangle is not
+                    {
+                        // prevents objects from entering each other
 
-                    System.out.println(Math.toDegrees(objOne.getAngle()) % 360);
-                    System.out.println(objOne.getDiameter() / 2 * Math.cos(objOne.getAngle()));
-                    System.out.println(objOne.getDiameter() / 2 * Math.sin(objOne.getAngle()));
+                        //Vector D1 = new Vector(((objOne.getDiameter()/2 + objTwo.getDiameter()/2) - distance), AngleBetween(objTwo, objOne), true);
 
-                    for (int i = 0; i < 4; i++)
-                        objOne.getPoints()[i].setLocation(objOne.getX() + objOne.getDiameter() / 2 * Math.cos(i * Math.PI / 2), objOne.getY() + objOne.getDiameter() / 2 * Math.sin(i * Math.PI / 2));
+                        //objOne.setX(objOne.getX() + D1.getX());
+                        //objOne.setY(objOne.getY() + D1.getY());
 
-                    for (Point2D p : objOne.getPoints())
-                        rotation.transform(p, p);
 
-                    Line2D[] ballLines = new Line2D[4];
-                    Line2D[] rectSides = new Line2D[4];
+                        double commonElasticy = objOne.getElasticity() * objTwo.getElasticity();
 
-                    for (int i=0; i<4; i++)
-                        ballLines[i] = new Line2D.Double(objOne.getX(), objTwo.getY(), objOne.getPoints()[i].getX(), objOne.getPoints()[i].getY());
+                        double collisionAngle = AngleBetween(pointOfCollision, objOne.getXY())+Math.PI/2;
+                        double temp = objOne.getSpeedAngle()-collisionAngle;
+                        double bounceAngle = collisionAngle - temp;
 
-                    rectSides[0] = new Line2D.Double(objTwo.getPoints()[0],objTwo.getPoints()[1]);
-                    rectSides[1] = new Line2D.Double(objTwo.getPoints()[1],objTwo.getPoints()[3]);
-                    rectSides[2] = new Line2D.Double(objTwo.getPoints()[3],objTwo.getPoints()[2]);
-                    rectSides[2] = new Line2D.Double(objTwo.getPoints()[2],objTwo.getPoints()[0]);
+                        if(log)
+                        {
+                            System.out.println(df.format(Math.toDegrees(objOne.getSpeedAngle())));
+                            System.out.println(df.format(Math.toDegrees(collisionAngle)));
+                            System.out.println(df.format(Math.toDegrees(temp)));
+                            System.out.println(df.format(Math.toDegrees(bounceAngle)));
+                        }
 
-                    Point2D intersection = getIntrsectionPoint(ballLines, rectSides);
-                    if(intersection == null)
+                        objOne.setSpeed(new Vector(objOne.getSpeed(), bounceAngle, true).mul(commonElasticy));
+
+                        if(log) System.out.println("> " + df.format(Math.toDegrees(objOne.getSpeedAngle())));
+                    }
+
+                    else if(!objOne.movable && objTwo.movable)   // ball is not movable, rectangle is movable
                     {
 
                     }
-                    else
+                    else    // both are movable
                     {
-                        System.out.println("collision");
-                    }
-                }
-                else    // both are movable
-                {
 
+                    }
                 }
             }
 

@@ -15,25 +15,42 @@ public class Gui extends JPanel implements Runnable
     {
         this.physics = physics;
         double elasticity = 1;
-        double platformElasticy = 0.1;
+        double platformElasticy = 0.8;
 
         physics.setObjects(Objects);
         physics.setForces(Forces);
 
+        /////WALLS/////
         /*
-        Objects.add(new Ball(100, 300, -3, -9, 0, 0, 100, 50, elasticity, true, Color.black, Color.red, 60, 10));
-        Objects.add(new Ball(500, 342, 0, 0, 0, 0, 100, 25, elasticity, true, Color.black, Color.yellow, 40, 10));
+        Objects.add(new Rectangle(390, 760, 0, 0, 0, 0, 100, 50, platformElasticy, false, Color.gray, Color.black, 1000, 20));
+        Objects.add(new Rectangle(390, 0, 0, 0, 0, 0, 100, 50, platformElasticy, false, Color.gray, Color.black, 1000, 20));
+        Objects.add(new Rectangle(0, 400, 0, 0, 90, 0, 100, 50, platformElasticy, false, Color.gray, Color.black, 1000, 20));
+        Objects.add(new Rectangle(780, 400, 0, 0, 90, 0, 100, 50, platformElasticy, false, Color.gray, Color.black, 1000, 20));
+        */
+        /////WALLS/////
 
-        for(int i=0;i <10; i++)
-            Objects.add(new Ball(200+i*20, 400+i*10, 0, 0, 0, 0, 100, 50, elasticity, true, Color.black, Color.green, 30, 10));
-
-        Objects.add(new Ball(350, 350, 0, 0, 0, 0, 10, 50, platformElasticy, false, Color.gray, Color.black, 100, 10));
-        Forces.add(new Force(0.1, Math.PI/2, true)); //  gravity
-        Forces.add(new Force(1, 0, false));        //  wind from left
+        /*
+        Objects.add(new Rectangle(390, 380, 0, 0, 45, 0, 100, 50, platformElasticy, false, Color.gray, Color.black, 400, 20));
+        Objects.add(new Rectangle(390, 380, 0, 0, -45, 0, 100, 50, platformElasticy, false, Color.gray, Color.black, 400, 20));
+        Objects.add(new Ball(390, 380, 0, 0, 0, 0, 10, 50, platformElasticy, false, Color.gray, Color.black, 100, 10));
 */
 
-        Objects.add(new Ball(100, 300, -3, -9, 0, 0, 100, 50, elasticity, true, Color.black, Color.red, 60, 10));
-        Objects.add(new Rectangle(500, 300, 0, 0, 0, 0.1, 100, 50, 1, false, Color.black, Color.red, 80, 50));
+
+        Objects.add(new Ball(300, 100, 2, 1, 0, 0, 100, 50, elasticity, true, Color.black, Color.red, 60, 10));
+
+        Objects.add(new Rectangle(300, 380, 0, 0, 30, 0, 100, 50, platformElasticy, false, Color.gray, Color.black, 600, 20));
+     //   Objects.add(new Ball(500, 342, 0, 0, 0, 0, 100, 25, elasticity, true, Color.black, Color.yellow, 40, 10));
+
+    //    for(int i=0;i <10; i++)
+    //        Objects.add(new Ball(200+i*20, 400+i*10, 0, 0, 0, 0, 100, 50, elasticity, true, Color.black, Color.green, 30, 10));
+
+     //   Forces.add(new Force(0.1, Math.PI/2, true)); //  gravity
+     //   Forces.add(new Force(1, 0, false));        //  wind from left
+
+
+    //    Objects.add(new Ball(100, 600, 1, 0.5, 0, 0, 100, 50, elasticity, true, Color.black, Color.red, 60, 10));
+    //    Objects.add(new Ball(350, 375, 0, 0, 0, 0, 10, 50, platformElasticy, false, Color.gray, Color.black, 100, 10));
+    //    Objects.add(new Rectangle(500, 300, 0, 0, 45, 0, 100, 50, 1, false, Color.black, Color.red, 300, 50));
 
     //    Forces.add(new Force(0.1, Math.PI/2, true)); //  gravity
     //    Forces.add(new Force(0.3, 0, false));        //  wind from left

@@ -56,8 +56,7 @@ public class Ball extends PhysicsObject
         g2d.drawOval((int) (getX() - getDiameter()/2), (int) (getY() - getDiameter()/2), getDiameter(), getDiameter());
 
 
-        for( Point2D p : points)
-            g2d.fillOval((int) (p.getX()-2), (int) (p.getY()-2), 5, 5);
+        // for( Point2D p : points) g2d.fillOval((int) (p.getX()-2), (int) (p.getY()-2), 5, 5);
 
     }
 }

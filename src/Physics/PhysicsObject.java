@@ -33,6 +33,17 @@ public class PhysicsObject
         this.type = type;
     }
 
+    public void setXY(Point2D point)
+    {
+        this.x = point.getX();
+        this.y = point.getY();
+    }
+
+    public Point2D getXY()
+    {
+        return new Point2D.Double(this.x, this.y);
+    }
+
     public double getX() { return x; }
 
     public void setX(double x) { this.x = x; }
