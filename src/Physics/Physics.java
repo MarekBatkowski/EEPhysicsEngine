@@ -14,7 +14,7 @@ public class Physics extends Thread
     ArrayList<PhysicsObject> objects;
     ArrayList<Force> Forces;
 
-    boolean log = true;
+    boolean log = false;
 
     public Physics(int ScreenSizeX, int ScreenSizeY)
     {
@@ -50,7 +50,7 @@ public class Physics extends Thread
     {
         for(int i=0; i<Objects.size(); i++)
         {
-            CheckWalls(Objects.get(i));
+        //    CheckWalls(Objects.get(i));
             for(int j=0; j<Objects.size(); j++)
                 if(j>i) CheckCollisions(Objects.get(i), Objects.get(j));
 
@@ -78,6 +78,7 @@ public class Physics extends Thread
         }
     }
 
+/*
     public void CheckWalls(PhysicsObject obj)
     {
         if(obj.type.equals("Circle"))
@@ -109,7 +110,7 @@ public class Physics extends Thread
         {
             Rectangle temp = (Rectangle) obj;
 
-            Point2D points[] = temp.getPoints();
+            ArrayList<Point2D> points = temp.getPoints();
             for(int i=0; i<1; i++)
             {
                 if (points[i].getX()<0)
@@ -137,7 +138,7 @@ public class Physics extends Thread
             }
         }
     }
-
+*/
     double AngleBetween(Point2D P1, Point2D P2)
     {
         return Math.atan2(P2.getY() - P1.getY(), P2.getX() - P1.getX());
@@ -246,50 +247,61 @@ public class Physics extends Thread
                     objTwo = temp;      //  rectangle
                 }
 
-                // collision as separate function - later
-                //Point2D collisionpoint = collide(PhysicsObject circle, PhysicsObject rectangle)
-
                 Rectangle objTwoR = (Rectangle) objTwo;
                 AffineTransform rotation = AffineTransform.getRotateInstance(Math.toRadians(objTwo.getAngle()), objOne.getX(), objOne.getY());
 
-                for (int i = 0; i < 4; i++)
-                    objOne.getPoints()[i].setLocation(objOne.getX() + objOne.getDiameter()/2*Math.cos(i*Math.PI/2), objOne.getY() + objOne.getDiameter()/2*Math.sin(i*Math.PI/2));
+                // sides
+                for(int i=0; i<4; i++)
+                    objOne.getPoints().get(i).setLocation(objOne.getX() + objOne.getDiameter()/2*Math.cos(i*Math.PI/2), objOne.getY() + objOne.getDiameter()/2*Math.sin(i*Math.PI/2));
+                for(int i=0; i<4; i++)
+                    rotation.transform(objOne.getPoints().get(i), objOne.getPoints().get(i));
 
-                for (Point2D p : objOne.getPoints())
-                    rotation.transform(p, p);
+                // corners
+                for(int i=4; i<8; i++)
+                    objOne.getPoints().get(i).setLocation(objOne.getX() + objOne.getDiameter()/2*Math.cos(AngleBetween(objOne.getXY(), objTwo.getPoints().get(i-4))), objOne.getY() + objOne.getDiameter()/2*Math.sin(AngleBetween(objOne.getXY(), objTwo.getPoints().get(i-4))));
 
                 Line2D[] ballLines = new Line2D[4];
 
                 for (int i=0; i<4; i++)
-                    ballLines[i] = new Line2D.Double(objOne.getX(), objTwo.getY(), objOne.getPoints()[i].getX(), objOne.getPoints()[i].getY());
+                    ballLines[i] = new Line2D.Double(objOne.getX(), objTwo.getY(), objOne.getPoints().get(i).getX(), objOne.getPoints().get(i).getY());
 
                 Shape rectangle = objTwoR.getShape();
 
-                Point2D pointOfCollision = null;
+                Point2D colPoint = null;
 
                 for (Point2D p : objOne.getPoints())
-                    if(rectangle.contains(p))   pointOfCollision = p;
+                    if(rectangle.contains(p))   colPoint = p;
 
-                if(pointOfCollision!=null)
+                if(colPoint!=null)
                 {
                     if(objOne.movable && !objTwo.movable)   // ball is movable, rectangle is not
                     {
-                        // prevents objects from entering each other
+                        //  prevents objects from entering each other
+                        double cAngle = AngleBetween(objOne.getXY(), colPoint);
+                        Point2D colPoint2 = new Point2D.Double(objOne.getX()+objOne.getDiameter()/2*Math.cos(cAngle), objOne.getY()+objOne.getDiameter()/2*Math.sin(cAngle));
 
-                        //Vector D1 = new Vector(((objOne.getDiameter()/2 + objTwo.getDiameter()/2) - distance), AngleBetween(objTwo, objOne), true);
+                        for(Point2D p : objOne.getPoints())
+                            p.setLocation(colPoint2);
 
-                        //objOne.setX(objOne.getX() + D1.getX());
-                        //objOne.setY(objOne.getY() + D1.getY());
 
+                        int i=0;
+                        while(rectangle.contains(colPoint2))
+                        {
+                            objOne.setX(objOne.getX() - Math.cos(cAngle));
+                            objOne.setY(objOne.getY() - Math.sin(cAngle));
+                            colPoint2.setLocation(objOne.getX()+objOne.getDiameter()/2*Math.cos(cAngle), objOne.getY()+objOne.getDiameter()/2*Math.sin(cAngle));
+                        }
+                        System.out.println("");
 
                         double commonElasticy = objOne.getElasticity() * objTwo.getElasticity();
 
-                        double collisionAngle = AngleBetween(pointOfCollision, objOne.getXY())+Math.PI/2;
+                        double collisionAngle = AngleBetween(colPoint, objOne.getXY())+Math.PI/2;
                         double temp = objOne.getSpeedAngle()-collisionAngle;
                         double bounceAngle = collisionAngle - temp;
 
                         if(log)
                         {
+                            System.out.println("=============================================");
                             System.out.println(df.format(Math.toDegrees(objOne.getSpeedAngle())));
                             System.out.println(df.format(Math.toDegrees(collisionAngle)));
                             System.out.println(df.format(Math.toDegrees(temp)));
@@ -314,7 +326,23 @@ public class Physics extends Thread
 
             if(objOne.type.equals("Rectangle") && objTwo.type.equals("Rectangle"))
             {
+                // detecting collisions
 
+                if(objOne.movable && objTwo.movable)    //  both are movable
+                {
+                    //  to do
+                }
+                else    // one is movable
+                {
+                    if (!objOne.movable)     // objOne movable, objTwo nonmovable
+                    {
+                        PhysicsObject temp = objOne;
+                        objOne = objTwo;
+                        objTwo = temp;
+                    }
+
+                    //  to do
+                }
             }
         }
     }

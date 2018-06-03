@@ -2,6 +2,7 @@ package Physics;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
+import java.util.ArrayList;
 
 public class PhysicsObject
 {
@@ -16,7 +17,7 @@ public class PhysicsObject
     protected double elasticity;
     protected boolean movable;
     protected String type;
-    Point2D points[]= new Point2D[4];
+    ArrayList<Point2D> points = new ArrayList<>();
 
     public PhysicsObject(double x, double y, double xSpeed, double ySpeed, double angle, double rotationSpeed, double mass, double maxSpeed, double elasticity, boolean movable, String type)
     {
@@ -105,7 +106,7 @@ public class PhysicsObject
         // implemented in extended classes
     }
 
-    public Point2D[] getPoints()
+    public ArrayList<Point2D> getPoints()
     {
         return points;
     }

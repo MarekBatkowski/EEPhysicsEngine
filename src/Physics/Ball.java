@@ -20,9 +20,8 @@ public class Ball extends PhysicsObject
         this.color = color;
         this.color2 = color2;
 
-        points = new Point2D[4];
-        for(int i=0; i<4; i++)
-            getPoints()[i] = new Point2D.Double(x,y);
+        for(int i=0; i<8; i++)
+            points.add(new Point2D.Double(x,y));
     }
 
     public int getDiameter()
@@ -55,9 +54,13 @@ public class Ball extends PhysicsObject
         g2d.fillOval((int) (getX() - getRingSize()/2), (int) (getY() - getRingSize()/2), getRingSize(), getRingSize());
         g2d.drawOval((int) (getX() - getDiameter()/2), (int) (getY() - getDiameter()/2), getDiameter(), getDiameter());
 
-
-        // for( Point2D p : points) g2d.fillOval((int) (p.getX()-2), (int) (p.getY()-2), 5, 5);
-
+        /*
+        for(Point2D p : points)
+        {
+            g2d.fillOval((int) (p.getX() - 2), (int) (p.getY() - 2), 5, 5);
+            g2d.drawLine((int) this.x, (int) this.y, (int) p.getX(), (int) p.getY());
+        }
+        */
     }
 }
 

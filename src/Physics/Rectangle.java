@@ -14,7 +14,6 @@ public class Rectangle extends PhysicsObject
     double height;
 
     private Rectangle2D rectangle;
-    Point2D points[];
 
     public Rectangle(double x, double y, double xSpeed, double ySpeed, double angle, double rotationSpeed, double mass, double maxSpeed, double elasticity, boolean movable, Color color, Color color2, double width, double height)
     {
@@ -27,11 +26,10 @@ public class Rectangle extends PhysicsObject
 
         rectangle = new Rectangle2D.Double(x - width/2, y - height/2, width, height);
 
-        points = new Point2D[4];
-        points[0] = new Point2D.Double(x - width/2, y - height/2);
-        points[1] = new Point2D.Double(x + width/2, y - height/2);
-        points[2] = new Point2D.Double(x - width/2, y + height/2);
-        points[3] = new Point2D.Double(x + width/2, y + height/2);
+        points.add(new Point2D.Double(x - width/2, y - height/2));
+        points.add(new Point2D.Double(x + width/2, y - height/2));
+        points.add(new Point2D.Double(x - width/2, y + height/2));
+        points.add(new Point2D.Double(x + width/2, y + height/2));
     }
 
     @Override
@@ -41,10 +39,10 @@ public class Rectangle extends PhysicsObject
 
         rectangle.setRect(x - width/2, y - height/2, width, height);
 
-        points[0].setLocation(x - width/2, y - height/2);
-        points[1].setLocation(x + width/2, y - height/2);
-        points[2].setLocation(x - width/2, y + height/2);
-        points[3].setLocation(x + width/2, y + height/2);
+        points.get(0).setLocation(x - width/2, y - height/2);
+        points.get(1).setLocation(x + width/2, y - height/2);
+        points.get(2).setLocation(x - width/2, y + height/2);
+        points.get(3).setLocation(x + width/2, y + height/2);
 
         for(Point2D p : points)
             rotation.transform(p, p);
@@ -57,18 +55,12 @@ public class Rectangle extends PhysicsObject
         g2d.setColor(color2);
         g2d.draw(rotation.createTransformedShape(rectangle));
 
-        g2d.draw(new Line2D.Double(points[0], points[3]));
-        g2d.draw(new Line2D.Double(points[1], points[2]));
+    //   g2d.draw(new Line2D.Double(points.get(0), points.get(3)));
+    //    g2d.draw(new Line2D.Double(points.get(1), points.get(2)));
 
         g2d.fillOval((int) x-3, (int) y-3, 5, 5);
         for(int i=0; i<4; i++)
-            g2d.fillOval((int) points[i].getX()-2, (int) points[i].getY()-2, 5, 5);
-    }
-
-    @Override
-    public Point2D[] getPoints()
-    {
-        return points;
+            g2d.fillOval((int) points.get(i).getX()-2, (int) points.get(i).getY()-2, 5, 5);
     }
 
     public Shape getShape()
