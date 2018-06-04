@@ -9,7 +9,7 @@ public class Force
     public Force(double value, double angle, boolean gravityLike)
     {
         this.value = value;
-        this.angle = angle;
+        this.angle = Math.toRadians(angle);
         this.gravityLike = gravityLike;
     }
 

@@ -73,9 +73,8 @@ public class Physics extends Thread
 
             obj.setX(obj.getX() + obj.getxSpeed());
             obj.setY(obj.getY() + obj.getySpeed());
-
-            obj.angle += obj.rotationSpeed;
         }
+        obj.angle += obj.rotationSpeed;
     }
 
 /*

@@ -10,8 +10,8 @@ public class Rectangle extends PhysicsObject
 {
     private Color color;
     private Color color2;
-    double width;
-    double height;
+    private double width;
+    private double height;
 
     private Rectangle2D rectangle;
 
